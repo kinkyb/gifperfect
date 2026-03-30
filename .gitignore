@@ -1,0 +1,10 @@
+build/
+dist/
+*.iconset/
+icon_1024.png
+icon.icns
+icon.ico
+__pycache__/
+*.pyc
+.DS_Store
+site/

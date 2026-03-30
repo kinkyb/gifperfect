@@ -1,0 +1,75 @@
+name: Build GIF Perfect
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install customtkinter static-ffmpeg pyinstaller pillow
+
+      - name: Build .app
+        run: python -m PyInstaller gifperfect.spec --noconfirm
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "GIF Perfect" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "GifPerfect.app" 150 180 \
+            --hide-extension "GifPerfect.app" \
+            --app-drop-link 450 180 \
+            --no-internet-enable \
+            "dist/GifPerfect-mac.dmg" \
+            "dist/GifPerfect.app"
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: GifPerfect-mac
+          path: dist/GifPerfect-mac.dmg
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install customtkinter static-ffmpeg pyinstaller pillow
+
+      - name: Download static ffmpeg for Windows
+        run: python -c "import static_ffmpeg; static_ffmpeg.add_paths()"
+
+      - name: Build .exe
+        run: python -m PyInstaller gifperfect.spec --noconfirm
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: GifPerfect-windows
+          path: dist/GifPerfect/
