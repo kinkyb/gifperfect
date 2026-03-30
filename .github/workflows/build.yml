@@ -22,6 +22,9 @@ jobs:
         run: |
           pip install customtkinter static-ffmpeg pyinstaller pillow
 
+      - name: Download static ffmpeg
+        run: python -c "import static_ffmpeg; static_ffmpeg.add_paths()"
+
       - name: Build .app
         run: python -m PyInstaller gifperfect.spec --noconfirm
 
@@ -62,7 +65,7 @@ jobs:
         run: |
           pip install customtkinter static-ffmpeg pyinstaller pillow
 
-      - name: Download static ffmpeg for Windows
+      - name: Download static ffmpeg
         run: python -c "import static_ffmpeg; static_ffmpeg.add_paths()"
 
       - name: Build .exe
