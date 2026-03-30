@@ -19,11 +19,13 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: |
-          pip install customtkinter static-ffmpeg pyinstaller pillow
+        run: pip install customtkinter static-ffmpeg pyinstaller pillow
 
       - name: Download static ffmpeg
         run: python -c "import static_ffmpeg; static_ffmpeg.add_paths()"
+
+      - name: Generate icon
+        run: python generate_icon.py
 
       - name: Build .app
         run: python -m PyInstaller gifperfect.spec --noconfirm
@@ -35,6 +37,7 @@ jobs:
         run: |
           create-dmg \
             --volname "GIF Perfect" \
+            --volicon "icon.icns" \
             --window-pos 200 120 \
             --window-size 600 400 \
             --icon-size 100 \
@@ -62,17 +65,22 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: |
-          pip install customtkinter static-ffmpeg pyinstaller pillow
+        run: pip install customtkinter static-ffmpeg pyinstaller pillow
 
       - name: Download static ffmpeg
         run: python -c "import static_ffmpeg; static_ffmpeg.add_paths()"
 
+      - name: Generate icon
+        run: python generate_icon.py
+
       - name: Build .exe
         run: python -m PyInstaller gifperfect.spec --noconfirm
+
+      - name: Zip output
+        run: Compress-Archive -Path dist\GifPerfect\* -DestinationPath dist\GifPerfect-windows.zip
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
           name: GifPerfect-windows
-          path: dist/GifPerfect/
+          path: dist/GifPerfect-windows.zip

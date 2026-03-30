@@ -1,22 +1,17 @@
-import sys, os, platform
+import sys, os, shutil
 
-# Locate static ffmpeg/ffprobe binaries
+# Download static ffmpeg and add to PATH, then locate via which
 import static_ffmpeg
-if sys.platform == 'darwin':
-    arch = 'darwin_arm64' if platform.machine() == 'arm64' else 'darwin_x86_64'
-    ff_dir = os.path.join(os.path.dirname(static_ffmpeg.__file__), 'bin', arch)
-    ff_bins = [
-        (os.path.join(ff_dir, 'ffmpeg'),  '.'),
-        (os.path.join(ff_dir, 'ffprobe'), '.'),
-    ]
-elif sys.platform == 'win32':
-    ff_dir = os.path.join(os.path.dirname(static_ffmpeg.__file__), 'bin', 'win64')
-    ff_bins = [
-        (os.path.join(ff_dir, 'ffmpeg.exe'),  '.'),
-        (os.path.join(ff_dir, 'ffprobe.exe'), '.'),
-    ]
-else:
-    ff_bins = []
+static_ffmpeg.add_paths()
+
+ff      = shutil.which('ffmpeg')
+ffprobe = shutil.which('ffprobe')
+if not ff:
+    raise RuntimeError("ffmpeg not found after static_ffmpeg.add_paths()")
+if not ffprobe:
+    raise RuntimeError("ffprobe not found after static_ffmpeg.add_paths()")
+
+ff_bins = [(ff, '.'), (ffprobe, '.')]
 
 block_cipher = None
 
