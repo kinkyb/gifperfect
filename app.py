@@ -105,11 +105,23 @@ def make_vf(resolution, fps, watermark=False):
     scale = RESOLUTION_MAP.get(resolution, RESOLUTION_MAP['640p'])
     vf = f"fps={fps},{scale},split[s0][s1];[s0]palettegen=max_colors=256[p];[s1][p]paletteuse=dither=bayer:diff_mode=rectangle"
     if watermark:
-        # Add semi-transparent watermark text at bottom-right
+        # Full-image tiled watermark — 9 positions across the frame, hard to crop out
+        wm = WATERMARK_TEXT
+        alpha = "0.35"
+        fs = "22"
+        draws = ",".join([
+            f"drawtext=text='{wm}':fontsize={fs}:fontcolor=white@{alpha}:x=10:y=10",
+            f"drawtext=text='{wm}':fontsize={fs}:fontcolor=white@{alpha}:x=(w-tw)/2:y=10",
+            f"drawtext=text='{wm}':fontsize={fs}:fontcolor=white@{alpha}:x=w-tw-10:y=10",
+            f"drawtext=text='{wm}':fontsize={fs}:fontcolor=white@{alpha}:x=10:y=(h-th)/2",
+            f"drawtext=text='{wm}':fontsize={fs}:fontcolor=white@{alpha}:x=(w-tw)/2:y=(h-th)/2",
+            f"drawtext=text='{wm}':fontsize={fs}:fontcolor=white@{alpha}:x=w-tw-10:y=(h-th)/2",
+            f"drawtext=text='{wm}':fontsize={fs}:fontcolor=white@{alpha}:x=10:y=h-th-10",
+            f"drawtext=text='{wm}':fontsize={fs}:fontcolor=white@{alpha}:x=(w-tw)/2:y=h-th-10",
+            f"drawtext=text='{wm}':fontsize={fs}:fontcolor=white@{alpha}:x=w-tw-10:y=h-th-10",
+        ])
         vf = (
-            f"fps={fps},{scale},"
-            f"drawtext=text='{WATERMARK_TEXT}':fontsize=18:fontcolor=white@0.5:"
-            f"x=w-tw-10:y=h-th-10,"
+            f"fps={fps},{scale},{draws},"
             f"split[s0][s1];[s0]palettegen=max_colors=256[p];[s1][p]paletteuse=dither=bayer:diff_mode=rectangle"
         )
     return vf
