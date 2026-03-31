@@ -7,4 +7,3 @@ icon.ico
 __pycache__/
 *.pyc
 .DS_Store
-site/

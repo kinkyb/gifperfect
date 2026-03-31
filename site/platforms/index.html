@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIF Size Limits by Platform — GIF Perfect Reference Guide</title>
+<meta name="description" content="Complete reference guide for GIF file size limits and acceptance conditions on X/Twitter, Discord, Reddit, Facebook, OnlyFans, Patreon, and more.">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Adam Lankamer">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<meta name="google-site-verification" content="JksAmcZiXeREpGP22l-_OKoTWqczeaoZ1ACCK1ea87A" />
+<link rel="canonical" href="https://gifperfect.com/platforms">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #0f0f0f;
+  --card:    #1a1a1a;
+  --border:  #2a2a2a;
+  --accent:  #7C5CBF;
+  --text:    #f0f0f0;
+  --muted:   #888;
+  --green:   #4caf7d;
+  --yellow:  #f0a500;
+  --red:     #e05555;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Nav ── */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 60px;
+  background: rgba(15,15,15,0.95);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { font-size: 18px; font-weight: 700; color: var(--text); }
+.logo span { color: var(--accent); }
+.nav-back { font-size: 13px; color: var(--muted); }
+.nav-back:hover { color: var(--text); text-decoration: none; }
+
+/* ── Hero ── */
+.hero {
+  max-width: 780px; margin: 0 auto;
+  padding: 64px 24px 48px;
+}
+.breadcrumb { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.breadcrumb a { color: var(--muted); }
+.breadcrumb a:hover { color: var(--text); }
+h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -.5px; margin-bottom: 14px; }
+.hero-sub { font-size: 16px; color: var(--muted); max-width: 580px; }
+
+/* ── Legend ── */
+.legend {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  max-width: 780px; margin: 0 auto;
+  padding: 0 24px 40px;
+  font-size: 13px;
+}
+.legend-item { display: flex; align-items: center; gap: 7px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dot-green  { background: var(--green); }
+.dot-yellow { background: var(--yellow); }
+.dot-red    { background: var(--red); }
+
+/* ── Section ── */
+.section { max-width: 780px; margin: 0 auto; padding: 0 24px 56px; }
+.section-title {
+  font-size: 11px; font-weight: 700; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--muted);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+
+/* ── Platform rows ── */
+.platform-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: start;
+  gap: 0 14px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+.platform-row:last-child { border-bottom: none; }
+
+.status-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+
+.platform-info {}
+.platform-name { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.platform-note { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.platform-note strong { color: var(--text); font-weight: 600; }
+
+.platform-limit {
+  text-align: right; white-space: nowrap;
+  font-size: 14px; font-weight: 700;
+  padding-top: 2px;
+}
+.limit-green  { color: var(--green); }
+.limit-yellow { color: var(--yellow); }
+.limit-red    { color: var(--red); }
+
+/* ── Tip box ── */
+.tip {
+  background: rgba(124,92,191,0.08);
+  border: 1px solid rgba(124,92,191,0.25);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin: 32px 0 0;
+  font-size: 14px; color: var(--muted); line-height: 1.6;
+}
+.tip strong { color: var(--accent); }
+
+/* ── Updated note ── */
+.updated {
+  max-width: 780px; margin: 0 auto;
+  padding: 0 24px 64px;
+  font-size: 12px; color: #555;
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+  font-size: 13px; color: var(--muted);
+  max-width: 780px; margin: 0 auto;
+}
+.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-links a { color: var(--muted); }
+.footer-links a:hover { color: var(--text); text-decoration: none; }
+
+@media (max-width: 560px) {
+  nav { padding: 0 20px; }
+  .platform-row { grid-template-columns: 18px 1fr; }
+  .platform-limit { grid-column: 2; text-align: left; margin-top: 4px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">GIF<span>Perfect</span></div>
+  <a href="/" class="nav-back">← Back to gifperfect.com</a>
+</nav>
+
+<div class="hero">
+  <div class="breadcrumb"><a href="/">gifperfect.com</a> / Platform limits</div>
+  <h1>GIF size limits &amp; acceptance by platform</h1>
+  <p class="hero-sub">
+    Use this as a reference when choosing your target size in GIF Perfect.
+    Limits and policies change — always verify with the platform directly for the latest.
+  </p>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="dot dot-green"></div> Native GIF support</div>
+  <div class="legend-item"><div class="dot dot-yellow"></div> Limited or converts to video</div>
+  <div class="legend-item"><div class="dot dot-red"></div> Not supported</div>
+</div>
+
+
+<!-- ── Social & messaging ── -->
+<div class="section">
+  <div class="section-title">Social &amp; messaging</div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-green"></div>
+    <div class="platform-info">
+      <div class="platform-name">X / Twitter</div>
+      <div class="platform-note"><strong>15 MB</strong> on web · <strong>5 MB</strong> on mobile. Max resolution 1280×1080. One GIF per post — cannot mix GIF with photos or video.</div>
+    </div>
+    <div class="platform-limit limit-green">15 MB web</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-green"></div>
+    <div class="platform-info">
+      <div class="platform-name">Discord</div>
+      <div class="platform-note"><strong>8 MB</strong> free accounts · <strong>50 MB</strong> Nitro Basic · <strong>500 MB</strong> full Nitro. Custom animated emoji: 256 KB hard limit.</div>
+    </div>
+    <div class="platform-limit limit-green">8 MB free</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-green"></div>
+    <div class="platform-info">
+      <div class="platform-name">Reddit</div>
+      <div class="platform-note"><strong>100 MB</strong> limit. Max 1 minute duration. Best performance under 10 MB — larger GIFs may auto-pause or not loop smoothly.</div>
+    </div>
+    <div class="platform-limit limit-green">100 MB</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-green"></div>
+    <div class="platform-info">
+      <div class="platform-name">Facebook</div>
+      <div class="platform-note"><strong>8 MB</strong> for GIFs in feed posts. Desktop upload only — mobile app does not support GIF uploads natively.</div>
+    </div>
+    <div class="platform-limit limit-green">8 MB</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-green"></div>
+    <div class="platform-info">
+      <div class="platform-name">LinkedIn</div>
+      <div class="platform-note">Approximately <strong>5 MB</strong>. GIFs play in feed posts. Limit is not officially documented — treat as approximate.</div>
+    </div>
+    <div class="platform-limit limit-yellow">~5 MB</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-yellow"></div>
+    <div class="platform-info">
+      <div class="platform-name">Telegram</div>
+      <div class="platform-note">Technically up to <strong>2 GB</strong> (4 GB with Premium), but Telegram converts all GIFs to silent MPEG-4 internally. Recipients auto-download only if under ~10 MB — larger files require a manual tap to load.</div>
+    </div>
+    <div class="platform-limit limit-yellow">Converts to MP4</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-yellow"></div>
+    <div class="platform-info">
+      <div class="platform-name">WhatsApp</div>
+      <div class="platform-note">Accepts GIFs sent via gallery (up to <strong>~16 MB</strong>) but converts them to MP4 on delivery. Videos under 6 seconds can be toggled to GIF inside the app.</div>
+    </div>
+    <div class="platform-limit limit-yellow">Converts to MP4</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-yellow"></div>
+    <div class="platform-info">
+      <div class="platform-name">Slack</div>
+      <div class="platform-note">File uploads up to <strong>1 GB</strong> — GIFs animate in chat. Custom animated emoji have a hard limit of <strong>128 KB</strong>.</div>
+    </div>
+    <div class="platform-limit limit-green">1 GB</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-red"></div>
+    <div class="platform-info">
+      <div class="platform-name">Instagram</div>
+      <div class="platform-note">Does <strong>not support .gif uploads</strong>. Only the first frame is displayed as a still image. Convert to MP4 (max 300 MB for feed/Reels, 100 MB for Stories) to share moving content.</div>
+    </div>
+    <div class="platform-limit limit-red">Not supported</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-red"></div>
+    <div class="platform-info">
+      <div class="platform-name">TikTok</div>
+      <div class="platform-note">GIF is technically listed as a supported format but is immediately converted to video on upload. Recommend converting to MP4 directly for best results.</div>
+    </div>
+    <div class="platform-limit limit-red">Converts / avoid</div>
+  </div>
+
+  <div class="tip">
+    <strong>Tip:</strong> For Instagram and TikTok, skip GIFs entirely — convert your video to MP4 directly. GIF Perfect's frame extraction mode can help you pull preview stills from your video for use as thumbnails.
+  </div>
+</div>
+
+
+<!-- ── Creator platforms ── -->
+<div class="section">
+  <div class="section-title">Creator &amp; subscription platforms</div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-green"></div>
+    <div class="platform-info">
+      <div class="platform-name">OnlyFans</div>
+      <div class="platform-note">GIF upload limit is <strong>100 MB</strong>. Keep chunks under this threshold for reliable uploads.</div>
+    </div>
+    <div class="platform-limit limit-green">100 MB</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-yellow"></div>
+    <div class="platform-info">
+      <div class="platform-name">Fansly</div>
+      <div class="platform-note">General upload limit reported as <strong>10 GB</strong>, but Fansly appears to convert GIFs to MP4 internally. No GIF-specific limit is publicly documented.</div>
+    </div>
+    <div class="platform-limit limit-yellow">Unconfirmed</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-green"></div>
+    <div class="platform-info">
+      <div class="platform-name">Patreon</div>
+      <div class="platform-note">GIF is an officially supported image format for posts. Direct post image uploads up to <strong>5 GB</strong>. Attachments and profile images: <strong>16 MB</strong>.</div>
+    </div>
+    <div class="platform-limit limit-green">5 GB posts</div>
+  </div>
+
+  <div class="platform-row">
+    <div class="status-dot dot-yellow"></div>
+    <div class="platform-info">
+      <div class="platform-name">ManyVids</div>
+      <div class="platform-note">GIF listed as a supported format for store item previews (alongside JPG and PNG). No file size limit publicly documented — treat as <strong>unconfirmed</strong>.</div>
+    </div>
+    <div class="platform-limit limit-yellow">Unconfirmed</div>
+  </div>
+
+  <div class="tip">
+    <strong>Tip:</strong> For platforms with large or unconfirmed limits (OnlyFans, Patreon), the practical constraint is subscriber bandwidth and feed load speed, not the upload cap. GIFs under 15–25 MB load quickly on mobile connections; larger GIFs may stall on slow networks.
+  </div>
+</div>
+
+
+<div class="updated">
+  Last reviewed March 2026. Platform policies change — verify with the platform directly before publishing.
+</div>
+
+<div style="border-top: 1px solid var(--border);">
+  <footer>
+    <span>© 2026 GIF Perfect · by <a href="https://adamlankamer.com" target="_blank" rel="noopener noreferrer" style="color:var(--muted);">adamlankamer.com</a></span>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="mailto:hello@gifperfect.com">Contact</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
