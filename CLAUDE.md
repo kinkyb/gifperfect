@@ -4,6 +4,7 @@
 - **Git push on every change**: After any code change is made and approved, immediately commit and `git push` to GitHub. This applies to this project and all other projects in the stack. No exceptions.
 - **Cost rule — free first**: Before recommending any paid tool, service, or subscription, always check whether a free alternative already exists in the current stack or is provided natively by an existing provider. Example: Namecheap and Cloudflare both include free email forwarding — ImprovMX was unnecessary. Always ask: "does a service Adam already pays for cover this?"
 - **Verify before confirming anything**: Never confirm that something is true, done, or working without first checking proof. This applies to mid-conversation statements ("yes, X is now the case", "that's already in place", "it's working") as well as task completion. Assume the statement is FALSE until you have verified it with a direct check (read the file, query the state, check the log, hit the endpoint). A successful CLI command is not proof of the outcome. If you haven't checked, don't confirm.
+- **Trust the user — search harder before contradicting**: If the user says something has been solved or exists in another workflow, do not contradict them based on a single failed search. Search again more thoroughly (different terms, subagents, broader scope) before saying it cannot be found. The user is usually right.
 
 ---
 
