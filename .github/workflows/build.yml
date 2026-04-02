@@ -79,6 +79,18 @@ jobs:
       - name: Zip output
         run: Compress-Archive -Path dist\GifPerfect\* -DestinationPath dist\GifPerfect-windows.zip
 
+      - name: Smoke test — launch and exit
+        run: |
+          Start-Process -FilePath "dist\GifPerfect\GifPerfect.exe" -PassThru | Tee-Object -Variable proc
+          Start-Sleep -Seconds 6
+          if (-not $proc.HasExited) {
+            Stop-Process -Id $proc.Id -Force
+            Write-Host "App launched and was running after 6s — OK"
+          } else {
+            Write-Error "App exited immediately (crash on startup)"
+            exit 1
+          }
+
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
