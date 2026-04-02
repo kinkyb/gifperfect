@@ -3,6 +3,7 @@
 ## Workflow Rules
 - **Git push on every change**: After any code change is made and approved, immediately commit and `git push` to GitHub. This applies to this project and all other projects in the stack. No exceptions.
 - **Cost rule — free first**: Before recommending any paid tool, service, or subscription, always check whether a free alternative already exists in the current stack or is provided natively by an existing provider. Example: Namecheap and Cloudflare both include free email forwarding — ImprovMX was unnecessary. Always ask: "does a service Adam already pays for cover this?"
+- **Verify before declaring done**: Before marking any task complete or telling Adam it's done, verify the end result actually worked — as if you'd already received the message that it wasn't done. A successful CLI command is not proof. Check the live URL, re-read the changed file, hit the endpoint, confirm the deploy timestamp. This applies to deployments, file edits, API changes, releases, and any publish/push action.
 
 ---
 
