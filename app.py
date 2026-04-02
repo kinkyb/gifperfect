@@ -58,19 +58,25 @@ def increment_free_use():
 LICENCE_FILE = os.path.join(os.path.expanduser('~'), '.gifperfect_licence')
 
 def load_saved_licence():
+    """Returns (key, batch) tuple. Handles both legacy plain-key and new JSON format."""
     try:
-        return open(LICENCE_FILE).read().strip()
+        raw = open(LICENCE_FILE).read().strip()
+        if raw.startswith('{'):
+            data = json.loads(raw)
+            return data.get('key', ''), data.get('batch', False)
+        # legacy plain-text key
+        return raw, raw.startswith('GIFB-')
     except Exception:
-        return ''
+        return '', False
 
-def save_licence(key):
+def save_licence(key, batch=False):
     with open(LICENCE_FILE, 'w') as f:
-        f.write(key.strip())
+        json.dump({'key': key.strip(), 'batch': batch}, f)
 
 def validate_licence(key):
-    """Returns True if licence key is valid (server check)."""
+    """Returns {'valid': bool, 'batch': bool}. Server check with offline grace."""
     if not key:
-        return False
+        return {'valid': False, 'batch': False}
     try:
         import urllib.request, urllib.parse
         data = urllib.parse.urlencode({'key': key}).encode()
@@ -78,10 +84,10 @@ def validate_licence(key):
         req.add_header('Content-Type', 'application/x-www-form-urlencoded')
         with urllib.request.urlopen(req, timeout=8) as r:
             body = json.loads(r.read())
-            return body.get('valid') is True
+            return {'valid': body.get('valid') is True, 'batch': body.get('batch', False)}
     except Exception:
-        # If server unreachable, trust locally saved key (offline grace)
-        return True
+        # Server unreachable — trust locally saved key, infer batch from prefix
+        return {'valid': True, 'batch': key.startswith('GIFB-')}
 
 # ── FFmpeg helpers ─────────────────────────────────────────────────────────────
 
@@ -198,8 +204,9 @@ class GifPerfectApp(ctk.CTk):
         self.configure(fg_color=BG)
 
         self.video_path   = None
-        self.licence_key  = load_saved_licence()
+        self.licence_key, self.batch_tier = load_saved_licence()
         self.licensed     = False
+        self.batch_files  = []
         self.output_dir   = None
         self.mode_var     = ctk.StringVar(value="gif")
 
@@ -229,21 +236,55 @@ class GifPerfectApp(ctk.CTk):
         self.drop_frame.bind("<Button-1>", lambda e: self._pick_file())
         self.drop_label.bind("<Button-1>", lambda e: self._pick_file())
 
+        # ── Batch file list (hidden until batch mode activated) ──
+        self.batch_frame = ctk.CTkFrame(self, fg_color=CARD, corner_radius=10,
+                                         border_width=2, border_color="#444")
+        # not packed yet — shown when mode = "batch"
+        self.batch_scroll = ctk.CTkScrollableFrame(self.batch_frame, fg_color="transparent",
+                                                    height=56)
+        self.batch_scroll.pack(fill="x", padx=8, pady=(8, 4))
+        self.batch_file_labels = []
+        batch_btn_row = ctk.CTkFrame(self.batch_frame, fg_color="transparent")
+        batch_btn_row.pack(fill="x", padx=8, pady=(0, 8))
+        ctk.CTkButton(batch_btn_row, text="+ Add files", width=110, height=28,
+                      font=ctk.CTkFont(size=11), fg_color=ACCENT, hover_color="#6448a8",
+                      text_color=BTN_FG, corner_radius=6,
+                      command=self._add_batch_files).pack(side="left")
+        ctk.CTkButton(batch_btn_row, text="Clear all", width=80, height=28,
+                      font=ctk.CTkFont(size=11), fg_color="transparent",
+                      border_width=1, border_color="#555", text_color=MUTED,
+                      hover_color="#333", corner_radius=6,
+                      command=self._clear_batch_files).pack(side="left", padx=(8, 0))
+        self.batch_count_label = ctk.CTkLabel(batch_btn_row, text="0 files",
+                                               font=ctk.CTkFont(size=11), text_color=MUTED)
+        self.batch_count_label.pack(side="right")
+
         # ── Mode ──
-        ctk.CTkLabel(self, text="Mode",
+        self._mode_section_label = ctk.CTkLabel(self, text="Mode",
                      font=ctk.CTkFont(size=13, weight="bold"),
-                     text_color=TEXT, anchor="w").pack(fill="x", **pad, pady=(0, 6))
+                     text_color=TEXT, anchor="w")
+        self._mode_section_label.pack(fill="x", **pad, pady=(0, 6))
         mode_frame = ctk.CTkFrame(self, fg_color="transparent")
         mode_frame.pack(fill="x", **pad, pady=(0, 16))
         self.mode_btns = []
         for label, val in [("GIF Chunks", "gif"), ("Frames Only", "frames")]:
-            b = ctk.CTkButton(mode_frame, text=label, width=160, height=36,
+            b = ctk.CTkButton(mode_frame, text=label, width=148, height=36,
                               font=ctk.CTkFont(size=12),
                               fg_color=ACCENT if val == "gif" else CARD,
                               hover_color=ACCENT, text_color=BTN_FG, corner_radius=8,
                               command=lambda v=val: self._set_mode(v))
             b.pack(side="left", padx=(0, 8))
             self.mode_btns.append((b, val))
+        # Batch button — always built, only enabled for Studio Batch licence holders
+        self.batch_mode_btn = ctk.CTkButton(
+            mode_frame, text="Batch", width=100, height=36,
+            font=ctk.CTkFont(size=12),
+            fg_color="#2a2a2a", hover_color=ACCENT if self.batch_tier else "#2a2a2a",
+            text_color="#555" if not self.batch_tier else BTN_FG,
+            corner_radius=8,
+            command=self._batch_btn_clicked)
+        self.batch_mode_btn.pack(side="left")
+        self.mode_btns.append((self.batch_mode_btn, "batch"))
 
         # ── Target size ──
         self.size_label = ctk.CTkLabel(self, text="Target size per GIF",
@@ -350,16 +391,41 @@ class GifPerfectApp(ctk.CTk):
 
     # ── Interactions ───────────────────────────────────────────────────────────
 
+    def _batch_btn_clicked(self):
+        if not self.batch_tier:
+            messagebox.showinfo(
+                "Studio Batch required",
+                "Batch mode is available on the Studio Batch plan ($199 one-time).\n\n"
+                "Visit gifperfect.com to upgrade."
+            )
+            return
+        self._set_mode("batch")
+
     def _set_mode(self, val):
         self.mode_var.set(val)
         for btn, v in self.mode_btns:
-            btn.configure(fg_color=ACCENT if v == val else CARD)
+            if v == "batch":
+                btn.configure(fg_color=ACCENT if val == "batch" else "#2a2a2a")
+            else:
+                btn.configure(fg_color=ACCENT if v == val else CARD)
+
+        # Toggle drop zone vs batch file list (both live before _mode_section_label)
+        if val == "batch":
+            self.drop_frame.pack_forget()
+            self.batch_frame.pack(fill="x", padx=24, pady=(0, 18),
+                                  before=self._mode_section_label)
+        else:
+            self.batch_frame.pack_forget()
+            self.drop_frame.pack(fill="x", padx=24, pady=(0, 18),
+                                 before=self._mode_section_label)
+
         is_gif = val == "gif"
-        dim = TEXT if is_gif else "#555555"
+        is_batch = val == "batch"
+        dim = TEXT if (is_gif or is_batch) else "#555555"
         self.size_label.configure(text_color=dim)
         self.res_label.configure(text_color=dim)
         self.fps_label.configure(text_color=dim)
-        if not is_gif:
+        if val == "frames":
             self.frames_var.set(True)
             self.frames_checkbox.configure(state="disabled")
         else:
@@ -392,14 +458,27 @@ class GifPerfectApp(ctk.CTk):
     def _check_licence_silent(self):
         if self.licence_key:
             def check():
-                valid = validate_licence(self.licence_key)
-                self.licensed = valid
+                result = validate_licence(self.licence_key)
+                self.licensed   = result['valid']
+                self.batch_tier = result['batch']
                 self.after(0, self._update_licence_ui)
+                if self.batch_tier:
+                    self.after(0, self._enable_batch_btn)
             threading.Thread(target=check, daemon=True).start()
+
+    def _enable_batch_btn(self):
+        self.batch_mode_btn.configure(
+            fg_color=CARD, hover_color=ACCENT,
+            text_color=BTN_FG
+        )
 
     def _update_licence_ui(self):
         if self.licensed:
-            self.lic_status.configure(text="✓  Licensed — unlimited use", text_color="#5cb85c")
+            if self.batch_tier:
+                label = "✓  Studio Batch — unlimited use + batch mode"
+            else:
+                label = "✓  Licensed — unlimited use"
+            self.lic_status.configure(text=label, text_color="#5cb85c")
         else:
             uses = free_uses_today()
             remaining = max(0, FREE_DAILY_LIMIT - uses)
@@ -418,7 +497,7 @@ class GifPerfectApp(ctk.CTk):
         ctk.CTkLabel(dialog, text="Licence Key",
                      font=ctk.CTkFont(size=13, weight="bold"),
                      text_color=TEXT).pack(pady=(20, 8))
-        entry = ctk.CTkEntry(dialog, width=320, placeholder_text="GIFP-XXXX-XXXX-XXXX")
+        entry = ctk.CTkEntry(dialog, width=320, placeholder_text="GIFP- or GIFB-XXXX-XXXX-XXXX")
         entry.pack(pady=(0, 12))
         if self.licence_key:
             entry.insert(0, self.licence_key)
@@ -430,23 +509,63 @@ class GifPerfectApp(ctk.CTk):
             ctk.CTkLabel(dialog, text="Validating...", text_color=MUTED,
                          font=ctk.CTkFont(size=11)).pack()
             dialog.update()
-            valid = validate_licence(key)
-            if valid:
+            result = validate_licence(key)
+            if result['valid']:
                 self.licence_key = key
                 self.licensed    = True
-                save_licence(key)
+                self.batch_tier  = result['batch']
+                save_licence(key, result['batch'])
                 self._update_licence_ui()
+                if self.batch_tier:
+                    self._enable_batch_btn()
                 dialog.destroy()
-                messagebox.showinfo("GIF Perfect", "Licence activated! Unlimited use enabled.")
+                msg = ("Licence activated! Unlimited use + Batch Mode enabled."
+                       if result['batch'] else
+                       "Licence activated! Unlimited use enabled.")
+                messagebox.showinfo("GIF Perfect", msg)
             else:
                 messagebox.showerror("GIF Perfect", "Invalid licence key. Check your purchase email.")
 
         ctk.CTkButton(dialog, text="Activate", fg_color=ACCENT,
                       hover_color="#6448a8", command=activate).pack()
 
+    # ── Batch file management ──────────────────────────────────────────────────
+
+    def _add_batch_files(self):
+        paths = filedialog.askopenfilenames(
+            title="Select video files",
+            filetypes=[("Video files", "*.mp4 *.mov *.avi *.mkv *.webm *.m4v"), ("All files", "*.*")]
+        )
+        for p in paths:
+            if p not in self.batch_files:
+                self.batch_files.append(p)
+        self._refresh_batch_list()
+
+    def _clear_batch_files(self):
+        self.batch_files.clear()
+        self._refresh_batch_list()
+
+    def _refresh_batch_list(self):
+        for lbl in self.batch_file_labels:
+            lbl.destroy()
+        self.batch_file_labels.clear()
+        for path in self.batch_files:
+            name = os.path.basename(path)
+            lbl = ctk.CTkLabel(self.batch_scroll, text=f"• {name}",
+                               font=ctk.CTkFont(size=11), text_color=TEXT,
+                               anchor="w")
+            lbl.pack(fill="x", pady=1)
+            self.batch_file_labels.append(lbl)
+        n = len(self.batch_files)
+        self.batch_count_label.configure(text=f"{n} file{'s' if n != 1 else ''}")
+
     # ── Generate ───────────────────────────────────────────────────────────────
 
     def _generate(self):
+        if self.mode_var.get() == "batch":
+            self._run_batch()
+            return
+
         if not self.video_path:
             messagebox.showwarning("GIF Perfect", "Please select a video file first.")
             return
@@ -521,6 +640,80 @@ class GifPerfectApp(ctk.CTk):
                 self.after(0, lambda: self._on_error(str(e)))
 
         threading.Thread(target=run, daemon=True).start()
+
+    def _run_batch(self):
+        if not self.batch_files:
+            messagebox.showwarning("GIF Perfect", "Add at least one video file to the batch list.")
+            return
+
+        out_dir = filedialog.askdirectory(title="Choose output folder for batch")
+        if not out_dir:
+            return
+
+        target_mb  = float(self.size_var.get() or 99)
+        resolution = self.res_var.get()
+        fps        = int(self.fps_var.get())
+        do_frames  = self.frames_var.get()
+        interval   = int(self.frame_interval.get() or 15) if do_frames else None
+        files      = list(self.batch_files)
+
+        self.generate_btn.configure(state="disabled", text="Processing…")
+        self.progress.set(0)
+        self._set_status(f"Batch: 0 / {len(files)} files…")
+
+        def run():
+            total     = len(files)
+            total_gifs = 0
+            for idx, video_path in enumerate(files):
+                # Free tier: check limit before each file
+                if not self.licensed:
+                    uses = free_uses_today()
+                    if uses >= FREE_DAILY_LIMIT:
+                        self.after(0, lambda i=idx: self._set_status(
+                            f"Daily limit reached after {i} file(s). Upgrade for unlimited batch."))
+                        break
+
+                name     = os.path.splitext(os.path.basename(video_path))[0]
+                file_dir = os.path.join(out_dir, name)
+                os.makedirs(file_dir, exist_ok=True)
+
+                self.after(0, lambda i=idx, n=name: self._set_status(
+                    f"Batch: {i+1}/{total} — {n}…"))
+
+                try:
+                    if not self.licensed:
+                        increment_free_use()
+
+                    gif_files = video_to_gif_chunks(
+                        video_path, target_mb, resolution, fps, file_dir,
+                        watermark=not self.licensed,
+                        progress_cb=lambda p, i=idx: self.after(0, lambda: self.progress.set(
+                            (i + p) / total))
+                    )
+                    total_gifs += len(gif_files)
+
+                    if do_frames and interval:
+                        frames_dir = os.path.join(file_dir, 'frames')
+                        os.makedirs(frames_dir, exist_ok=True)
+                        extract_frame_jpgs(video_path, interval, frames_dir)
+
+                except Exception as e:
+                    self.after(0, lambda err=str(e), n=name: messagebox.showerror(
+                        "GIF Perfect — Batch Error", f"Error processing {n}:\n{err}"))
+
+            self.after(0, lambda: self._on_done_batch(total_gifs, out_dir))
+
+        threading.Thread(target=run, daemon=True).start()
+
+    def _on_done_batch(self, total_gifs, out_dir):
+        self.progress.set(1.0)
+        self._set_status(f"Batch done — {total_gifs} GIF{'s' if total_gifs != 1 else ''} across {len(self.batch_files)} file(s)")
+        self.generate_btn.configure(state="normal", text="Generate")
+        self._update_licence_ui()
+        if sys.platform == "darwin":
+            subprocess.run(["open", out_dir])
+        elif sys.platform == "win32":
+            subprocess.run(["explorer", out_dir])
 
     def _set_status(self, msg):
         self.status_label.configure(text=msg)
