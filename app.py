@@ -12,7 +12,8 @@ WATERMARK_TEXT   = "gifperfect.com"
 def ffmpeg_path():
     """Return path to bundled ffmpeg (PyInstaller) or static/system ffmpeg."""
     if getattr(sys, 'frozen', False):
-        base = sys._MEIPASS
+        # One-directory build: ffmpeg(.exe) is next to the executable, not in _MEIPASS
+        base = os.path.dirname(sys.executable)
         for name in ('ffmpeg', 'ffmpeg.exe'):
             ff = os.path.join(base, name)
             if os.path.exists(ff):
