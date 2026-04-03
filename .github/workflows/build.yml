@@ -79,6 +79,16 @@ jobs:
       - name: Zip output
         run: Compress-Archive -Path dist\GifPerfect\* -DestinationPath dist\GifPerfect-windows.zip
 
+      - name: Verify ffmpeg bundled
+        run: |
+          Write-Host "=== dist\GifPerfect contents ==="
+          Get-ChildItem dist\GifPerfect | Select-Object Name, Length | Format-Table
+          if (-not (Test-Path "dist\GifPerfect\ffmpeg.exe")) {
+            Write-Error "FATAL: ffmpeg.exe not found in bundle!"
+            exit 1
+          }
+          Write-Host "ffmpeg.exe confirmed present in bundle"
+
       - name: Smoke test — launch and exit
         run: |
           Start-Process -FilePath "dist\GifPerfect\GifPerfect.exe" -PassThru | Tee-Object -Variable proc

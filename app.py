@@ -12,19 +12,32 @@ WATERMARK_TEXT   = "gifperfect.com"
 def ffmpeg_path():
     """Return path to bundled ffmpeg (PyInstaller) or static/system ffmpeg."""
     if getattr(sys, 'frozen', False):
-        # One-directory build: ffmpeg(.exe) is next to the executable, not in _MEIPASS
-        base = os.path.dirname(sys.executable)
-        for name in ('ffmpeg', 'ffmpeg.exe'):
-            ff = os.path.join(base, name)
-            if os.path.exists(ff):
-                return ff
-    # Dev: use static_ffmpeg if available, else fall back to system ffmpeg
+        # Check exe dir (one-directory build) and _MEIPASS (one-file build)
+        bases = [os.path.dirname(sys.executable)]
+        if hasattr(sys, '_MEIPASS') and sys._MEIPASS not in bases:
+            bases.append(sys._MEIPASS)
+        for base in bases:
+            for name in ('ffmpeg.exe', 'ffmpeg'):
+                ff = os.path.join(base, name)
+                if os.path.exists(ff):
+                    return ff
+        # ffmpeg not found in bundle — show clear error instead of crashing
+        import tkinter as tk
+        from tkinter import messagebox as _mb
+        _r = tk.Tk(); _r.withdraw()
+        _mb.showerror(
+            "GIF Perfect — Missing component",
+            "ffmpeg.exe was not found in the application folder.\n\n"
+            "Please re-download GIF Perfect from gifperfect.com or extract the ZIP fully before running."
+        )
+        sys.exit(1)
+    # Dev mode: use static_ffmpeg if available, else fall back to system ffmpeg
     try:
         import static_ffmpeg
         static_ffmpeg.add_paths()
     except ImportError:
         pass
-    return 'ffmpeg'
+    return shutil.which('ffmpeg') or 'ffmpeg'
 
 FFMPEG = ffmpeg_path()
 
