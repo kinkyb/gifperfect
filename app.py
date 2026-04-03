@@ -3,6 +3,9 @@ from pathlib import Path
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 
+# Suppress console window on Windows when spawning ffmpeg subprocesses
+_NO_WINDOW = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+
 # ── Licence ───────────────────────────────────────────────────────────────────
 LICENCE_SERVER = "https://api.acaption.com/gifperfect/licence"
 FREE_DAILY_LIMIT = 3
@@ -122,6 +125,7 @@ def get_duration(video_path):
          '-v', 'quiet', '-show_entries', 'format=duration',
          '-of', 'csv=p=0', str(video_path)],
         capture_output=True, text=True, timeout=30,
+        creationflags=_NO_WINDOW,
     )
     return float(result.stdout.strip())
 
@@ -166,6 +170,7 @@ def video_to_gif_chunks(video_path, target_mb, resolution, fps, out_dir,
         [FFMPEG, '-ss', '0', '-t', str(test_secs), '-i', str(video_path),
          '-vf', vf, test_path, '-y'],
         capture_output=True, timeout=120,
+        creationflags=_NO_WINDOW,
     )
     test_mb   = os.path.getsize(test_path) / (1024 * 1024)
     os.remove(test_path)
@@ -182,6 +187,7 @@ def video_to_gif_chunks(video_path, target_mb, resolution, fps, out_dir,
             [FFMPEG, '-ss', str(start), '-t', str(chunk_secs),
              '-i', str(video_path), '-vf', vf, out_gif, '-y'],
             capture_output=True, timeout=300,
+            creationflags=_NO_WINDOW,
         )
         if os.path.exists(out_gif):
             output_files.append(out_gif)
@@ -197,6 +203,7 @@ def extract_frame_jpgs(video_path, interval_secs, out_dir, progress_cb=None):
          '-vf', f'fps=1/{interval_secs}', '-q:v', '2',
          os.path.join(out_dir, 'frame_%03d.jpg'), '-y'],
         capture_output=True, timeout=300,
+        creationflags=_NO_WINDOW,
     )
     frames = sorted(Path(out_dir).glob('frame_*.jpg'))
     return frames
