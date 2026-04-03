@@ -1,7 +1,7 @@
 [Setup]
 AppName=GIF Perfect
-AppVersion=1.1.4
-AppVerName=GIF Perfect 1.1.4
+AppVersion=1.1.6
+AppVerName=GIF Perfect 1.1.6
 AppPublisher=GIF Perfect
 AppPublisherURL=https://gifperfect.com
 AppSupportURL=https://gifperfect.com
