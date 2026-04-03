@@ -95,9 +95,6 @@ jobs:
                       shutil.copy(fp, os.path.join(dest_dir, 'ffprobe.exe'))
                       print(f'Copied ffprobe.exe to {dest_dir}')
 
-      - name: Zip output
-        run: Compress-Archive -Path dist\GifPerfect\* -DestinationPath dist\GifPerfect-windows.zip
-
       - name: Verify ffmpeg bundled
         run: |
           Write-Host "=== dist\GifPerfect (recursive ffmpeg search) ==="
@@ -108,6 +105,18 @@ jobs:
             exit 1
           }
           Write-Host "ffmpeg.exe confirmed present in bundle"
+
+      - name: Build Windows installer (Inno Setup)
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" gifperfect.iss
+          if (-not (Test-Path "dist\GifPerfect-setup.exe")) {
+            Write-Error "Installer not produced!"
+            exit 1
+          }
+          Write-Host "Installer built: $(Get-Item dist\GifPerfect-setup.exe | Select-Object -ExpandProperty Length) bytes"
+
+      - name: Zip portable build
+        run: Compress-Archive -Path dist\GifPerfect\* -DestinationPath dist\GifPerfect-windows.zip
 
       - name: Smoke test — launch and exit
         run: |
@@ -121,7 +130,13 @@ jobs:
             exit 1
           }
 
-      - name: Upload EXE
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: GifPerfect-windows-setup
+          path: dist/GifPerfect-setup.exe
+
+      - name: Upload portable ZIP
         uses: actions/upload-artifact@v4
         with:
           name: GifPerfect-windows
