@@ -76,9 +76,6 @@ jobs:
       - name: Build .exe
         run: python -m PyInstaller gifperfect.spec --noconfirm
 
-      - name: Zip output
-        run: Compress-Archive -Path dist\GifPerfect\* -DestinationPath dist\GifPerfect-windows.zip
-
       - name: Copy ffmpeg into bundle
         shell: python
         run: |
@@ -97,6 +94,9 @@ jobs:
                   if fp:
                       shutil.copy(fp, os.path.join(dest_dir, 'ffprobe.exe'))
                       print(f'Copied ffprobe.exe to {dest_dir}')
+
+      - name: Zip output
+        run: Compress-Archive -Path dist\GifPerfect\* -DestinationPath dist\GifPerfect-windows.zip
 
       - name: Verify ffmpeg bundled
         run: |
