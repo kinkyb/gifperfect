@@ -12,10 +12,14 @@ WATERMARK_TEXT   = "gifperfect.com"
 def ffmpeg_path():
     """Return path to bundled ffmpeg (PyInstaller) or static/system ffmpeg."""
     if getattr(sys, 'frozen', False):
-        # Check exe dir (one-directory build) and _MEIPASS (one-file build)
-        bases = [os.path.dirname(sys.executable)]
-        if hasattr(sys, '_MEIPASS') and sys._MEIPASS not in bases:
+        # PyInstaller 6.x one-dir: deps go in _internal/ == sys._MEIPASS
+        # PyInstaller 5.x one-dir: deps go next to exe == os.path.dirname(sys.executable)
+        bases = []
+        if hasattr(sys, '_MEIPASS'):
             bases.append(sys._MEIPASS)
+        exe_dir = os.path.dirname(sys.executable)
+        if exe_dir not in bases:
+            bases.append(exe_dir)
         for base in bases:
             for name in ('ffmpeg.exe', 'ffmpeg'):
                 ff = os.path.join(base, name)

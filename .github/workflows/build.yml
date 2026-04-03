@@ -79,12 +79,32 @@ jobs:
       - name: Zip output
         run: Compress-Archive -Path dist\GifPerfect\* -DestinationPath dist\GifPerfect-windows.zip
 
+      - name: Copy ffmpeg into bundle
+        shell: python
+        run: |
+          import static_ffmpeg, shutil, os
+          static_ffmpeg.add_paths()
+          ff = shutil.which('ffmpeg')
+          fp = shutil.which('ffprobe')
+          print(f'ffmpeg source: {ff}')
+          print(f'ffprobe source: {fp}')
+          # PyInstaller 6.x puts deps in _internal/, older puts them next to exe
+          for dest_dir in [r'dist\GifPerfect\_internal', r'dist\GifPerfect']:
+              if os.path.isdir(dest_dir):
+                  if ff:
+                      shutil.copy(ff, os.path.join(dest_dir, 'ffmpeg.exe'))
+                      print(f'Copied ffmpeg.exe to {dest_dir}')
+                  if fp:
+                      shutil.copy(fp, os.path.join(dest_dir, 'ffprobe.exe'))
+                      print(f'Copied ffprobe.exe to {dest_dir}')
+
       - name: Verify ffmpeg bundled
         run: |
-          Write-Host "=== dist\GifPerfect contents ==="
-          Get-ChildItem dist\GifPerfect | Select-Object Name, Length | Format-Table
-          if (-not (Test-Path "dist\GifPerfect\ffmpeg.exe")) {
-            Write-Error "FATAL: ffmpeg.exe not found in bundle!"
+          Write-Host "=== dist\GifPerfect (recursive ffmpeg search) ==="
+          Get-ChildItem dist\GifPerfect -Recurse | Where-Object { $_.Name -like "ffmpeg*" } | Select-Object FullName, Length | Format-Table
+          $found = (Test-Path "dist\GifPerfect\ffmpeg.exe") -or (Test-Path "dist\GifPerfect\_internal\ffmpeg.exe")
+          if (-not $found) {
+            Write-Error "FATAL: ffmpeg.exe not found anywhere in bundle!"
             exit 1
           }
           Write-Host "ffmpeg.exe confirmed present in bundle"
