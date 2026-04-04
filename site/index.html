@@ -514,6 +514,66 @@ footer {
   </div>
 </div>
 
+<!-- ── Batch mode mockup ── -->
+<div style="padding: 0 24px 0;">
+  <div style="max-width:520px;margin:16px auto 80px;text-align:center;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(124,92,191,0.12);border:1px solid rgba(124,92,191,0.3);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.4px;margin-bottom:16px;">
+      ✦ STUDIO BATCH — process multiple videos at once
+    </div>
+    <div class="app-preview" style="margin-bottom:0;">
+      <div class="app-title-row">
+        <div class="app-dot"></div>
+        <div class="app-dot"></div>
+        <div class="app-dot"></div>
+        <span class="app-name">GIF Perfect</span>
+      </div>
+      <div class="app-row" style="margin-bottom:16px;">
+        <div class="app-label">Mode</div>
+        <div class="app-chips">
+          <div class="app-chip">GIF Chunks</div>
+          <div class="app-chip">Frames Only</div>
+          <div class="app-chip active">Batch</div>
+        </div>
+      </div>
+      <!-- Batch file list -->
+      <div style="background:#1a1a1a;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;">
+          <span>Queue</span><span style="color:var(--accent);">4 files</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);padding:5px 8px;background:#222;border-radius:5px;">
+            <span style="color:var(--accent);font-size:10px;">▶</span> wedding_highlight_reel.mp4 <span style="margin-left:auto;color:var(--muted);font-size:11px;">done ✓</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);padding:5px 8px;background:#222;border-radius:5px;">
+            <span style="color:var(--accent);font-size:10px;">▶</span> gameplay_clip_2.mp4 <span style="margin-left:auto;color:var(--muted);font-size:11px;">processing…</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#555;padding:5px 8px;background:#1e1e1e;border-radius:5px;">
+            <span style="font-size:10px;">▶</span> promo_video_final.mp4 <span style="margin-left:auto;font-size:11px;">queued</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#555;padding:5px 8px;background:#1e1e1e;border-radius:5px;">
+            <span style="font-size:10px;">▶</span> event_recap_4k.mp4 <span style="margin-left:auto;font-size:11px;">queued</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <div style="padding:4px 12px;background:#2a2a2a;border:1px solid var(--border);border-radius:5px;font-size:11px;font-weight:600;color:var(--text);cursor:default;">+ Add files</div>
+          <div style="padding:4px 12px;background:#2a2a2a;border:1px solid var(--border);border-radius:5px;font-size:11px;font-weight:600;color:var(--muted);cursor:default;">Clear all</div>
+        </div>
+      </div>
+      <div class="app-row">
+        <div class="app-label">Target size per GIF</div>
+        <div class="app-chips">
+          <div class="app-chip">15 MB</div>
+          <div class="app-chip active">25 MB</div>
+          <div class="app-chip">99 MB</div>
+          <div class="app-chip">Custom</div>
+        </div>
+      </div>
+      <button class="app-generate">Generate All</button>
+      <div class="app-progress"><div class="app-progress-bar" style="width:28%;"></div></div>
+    </div>
+  </div>
+</div>
+
 <!-- ── Platforms note ── -->
 <div class="platforms-note">
   * GIF size limits and acceptance conditions vary by platform —
