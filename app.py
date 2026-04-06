@@ -178,11 +178,12 @@ def video_to_gif_chunks(video_path, target_mb, resolution, fps, out_dir,
     mb_per_sec  = test_mb / test_secs
     chunk_secs  = max(1, math.floor((target_mb * 0.95) / mb_per_sec))
     n_chunks    = math.ceil(duration / chunk_secs)
+    stem        = Path(video_path).stem
 
     output_files = []
     for i in range(n_chunks):
         start   = i * chunk_secs
-        out_gif = os.path.join(out_dir, f'chunk_{i+1:03d}.gif')
+        out_gif = os.path.join(out_dir, f'{stem}_chunk_{i+1:03d}.gif')
         subprocess.run(
             [FFMPEG, '-ss', str(start), '-t', str(chunk_secs),
              '-i', str(video_path), '-vf', vf, out_gif, '-y'],
@@ -201,11 +202,11 @@ def extract_frame_jpgs(video_path, interval_secs, out_dir, progress_cb=None):
     subprocess.run(
         [FFMPEG, '-i', str(video_path),
          '-vf', f'fps=1/{interval_secs}', '-q:v', '2',
-         os.path.join(out_dir, 'frame_%03d.jpg'), '-y'],
+         os.path.join(out_dir, f'{Path(video_path).stem}_frame_%03d.jpg'), '-y'],
         capture_output=True, timeout=300,
         creationflags=_NO_WINDOW,
     )
-    frames = sorted(Path(out_dir).glob('frame_*.jpg'))
+    frames = sorted(Path(out_dir).glob('*_frame_*.jpg'))
     return frames
 
 # ── GUI ────────────────────────────────────────────────────────────────────────
@@ -224,7 +225,7 @@ class GifPerfectApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("GIF Perfect")
-        self.geometry("560x760")
+        self.geometry("560x820")
         self.resizable(False, False)
         self.configure(fg_color=BG)
 
@@ -266,7 +267,7 @@ class GifPerfectApp(ctk.CTk):
                                          border_width=2, border_color="#444")
         # not packed yet — shown when mode = "batch"
         self.batch_scroll = ctk.CTkScrollableFrame(self.batch_frame, fg_color="transparent",
-                                                    height=56)
+                                                    height=130)
         self.batch_scroll.pack(fill="x", padx=8, pady=(8, 4))
         self.batch_file_labels = []
         batch_btn_row = ctk.CTkFrame(self.batch_frame, fg_color="transparent")
