@@ -34,8 +34,10 @@ Stripe-native. App Store / ProductHunt / ProductHunt eligible. Zero adult compli
 - Creator ($29): `https://buy.stripe.com/bJe28r3wd61A5Xv9p16Ri04`
 - Studio ($99): `https://buy.stripe.com/14A9AT2s92Po99HdFh6Ri03`
 - Studio Batch ($199): `https://buy.stripe.com/aFaaEX7Mtey60DbeJl6Ri05`
-- Webhook secret: `whsec_hAvhVSpcGeVcKZtwRCq8KIaaj10NUI6R`
+- Live webhook secret: `whsec_hAvhVSpcGeVcKZtwRCq8KIaaj10NUI6R`
+- Test webhook secret: `whsec_9LR9ICUmDoCkBKtDxjxz7XOzNkHQb8Ph`
 - Tier detection: `amount_total` cents → 2900=Creator (1 key), 9900=Studio (5 keys), 19900=Studio Batch (5 GIFB- keys)
+- ⚠️ Ucaption test webhook also fires on GifPerfect test purchases (same Stripe account) — expected, harmless in production (live webhooks are separate)
 
 ## File Locations
 - Main app: `/Users/mac/Desktop/GifPerfect/app.py`
@@ -49,11 +51,14 @@ Stripe-native. App Store / ProductHunt / ProductHunt eligible. Zero adult compli
 ## App Features
 - **GIF Chunks mode**: test segment → estimate MB/s → calculate chunk duration → split video into GIF chunks at target size
 - **Frames Only mode**: standalone JPG frame extraction without GIF generation
+- **Batch mode**: Studio Batch (GIFB- key) only — queue multiple videos, process sequentially, per-video output subdirs
 - **Watermark**: Free tier — full-image 9-position tiled `drawtext` overlay via FFmpeg
 - **Target size presets**: 15 MB (X/Twitter) / 25 MB (Discord) / 99 MB (OF) / custom
 - **Resolution**: 480p / 640p / 1080p / original
 - **FPS**: 15 / 24 / 30
 - **Frame extraction**: optional, saves JPGs alongside GIFs every N seconds
+- **Output naming**: `originalfilename_chunk_001.gif`, `originalfilename_frame_001.jpg` (prefixed with source filename stem)
+- **Code signing**: NOT done — Apple Developer Program ($99/yr) and Windows cert (~€100/yr) pending budget. Users must right-click → Open on Mac; More info → Run anyway on Windows.
 
 ## FFmpeg
 - Dev: resolved via `static_ffmpeg.add_paths()` + `shutil.which('ffmpeg')`
@@ -70,7 +75,7 @@ All records added to Namecheap Advanced DNS:
 - ✅ DKIM TXT: `resend._domainkey`
 - ✅ TXT: `send` → `v=spf1 include:amazonses.com ~all`
 - ✅ TXT: `_dmarc` → `v=DMARC1; p=none;`
-- ❌ MX: `send` → `feedback-smtp.eu-west-1.amazonses.com` — Namecheap Host Records editor has no MX type; subdomain MX not supported. Skip — only affects bounce feedback, not deliverability.
+- ✅ MX: `send` → `feedback-smtp.eu-west-1.amazonses.com` — added via Namecheap custom MX; required to get domain to Verified status on Resend.
 
 ## Run Locally
 ```bash
@@ -84,14 +89,17 @@ bash build_mac.sh
 
 ## Deploy Sales Page
 ```bash
-# Push to GitHub → Netlify auto-deploys from main branch
-# Or: cd site && netlify deploy --prod --dir .
+# Netlify does NOT auto-deploy from GitHub — must deploy manually every time:
+export PATH="/opt/homebrew/Cellar/node/25.8.1_1/bin:/opt/homebrew/bin:$PATH"
+cd site && netlify deploy --prod --dir .
 ```
 
 ## Acaption API Webhook Env Vars (Hetzner VPS)
-- `STRIPE_GIFPERFECT_SECRET` — Stripe webhook signing secret
-- `RESEND_API_KEY` — new Resend account key for gifperfect.com
+- `STRIPE_GIFPERFECT_SECRET` — live Stripe webhook signing secret (`whsec_hAvh...`)
+- `STRIPE_GIFPERFECT_TEST_SECRET` — test Stripe webhook signing secret (`whsec_9LR9...`) — both live and test are supported simultaneously
+- `RESEND_GIFPERFECT_API_KEY` — dedicated Resend account key for gifperfect.com (`re_YMh8...`) — separate from `RESEND_API_KEY`
 - `GIFPERFECT_FROM_EMAIL` — `hello@gifperfect.com`
+- `RESEND_API_KEY` — belongs to a different Resend account; NOT used for GifPerfect emails
 
 ## Other Projects in the Stack
 | Project | Market | Folder |
