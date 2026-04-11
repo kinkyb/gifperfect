@@ -90,8 +90,11 @@ bash build_mac.sh
 ```
 
 ## Deploy Sales Page
+
+✅ **GitHub → Netlify auto-deploy connected (April 2026)** — every push to `main` deploys `site/` to `gifperfect.com` automatically. No manual deploy needed.
+
 ```bash
-# Netlify does NOT auto-deploy from GitHub — must deploy manually every time:
+# Manual deploy (fallback only):
 export PATH="/opt/homebrew/Cellar/node/25.8.1_1/bin:/opt/homebrew/bin:$PATH"
 cd site && netlify deploy --prod --dir .
 ```
