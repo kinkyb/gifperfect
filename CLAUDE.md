@@ -101,7 +101,16 @@ cd site && netlify deploy --prod --dir .
 - `STRIPE_GIFPERFECT_TEST_SECRET` — test Stripe webhook signing secret (`whsec_9LR9...`) — both live and test are supported simultaneously
 - `RESEND_GIFPERFECT_API_KEY` — dedicated Resend account key for gifperfect.com (`re_YMh8...`) — separate from `RESEND_API_KEY`
 - `GIFPERFECT_FROM_EMAIL` — `hello@gifperfect.com`
-- `RESEND_API_KEY` — belongs to a different Resend account; NOT used for GifPerfect emails
+- `RESEND_API_KEY` — belongs to Acaption; NOT used for GifPerfect emails
+
+## Resend — Verified Domain
+**`gifperfect.com` is the only verified Resend sender domain across the entire stack.**
+All products (GifPerfect, SlomoPerfect, UTagger) send licence emails from `hello@gifperfect.com`.
+Do NOT change any product's `FROM_EMAIL` to another domain without first verifying that domain in Resend — emails will silently fail.
+
+## Known Bug Fixed (April 2026)
+`send_gifperfect_keys()` was guarding on `RESEND_API_KEY` instead of `RESEND_GIFPERFECT_API_KEY`.
+Fixed in commit `2510078` — now correctly guards on its own key.
 
 ## Other Projects in the Stack
 | Project | Market | Folder |
