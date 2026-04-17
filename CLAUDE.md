@@ -22,7 +22,7 @@ Stripe-native. App Store / ProductHunt / ProductHunt eligible. Zero adult compli
 - **Packaging**: PyInstaller + static-ffmpeg. Mac .dmg (local build via `build_mac.sh`). Windows .exe (GitHub Actions `build.yml` on `windows-latest`).
 - **Licence/webhook backend**: `/gifperfect/webhook` on the Acaption API server (`https://api.acaption.com`) — generates and emails GIFP- or GIFB- keys after Stripe purchase.
 - **Email**: Resend via new dedicated account for `gifperfect.com`. DNS complete. `hello@gifperfect.com` forwards to `adam@translatea.com` via Namecheap Email Forwarding.
-- **Sales page**: `site/` folder → deployed to Netlify at `gifperfect.com`.
+- **Sales page**: `site/` folder → deployed to Netlify at `gifperfect.com`. Download buttons use clean `/download/mac`, `/download/windows`, `/download/free` paths — GitHub URLs hidden in `site/_redirects` (Netlify 302 redirects).
 
 ## Pricing
 | Tier | Price | Limit | Notes |
