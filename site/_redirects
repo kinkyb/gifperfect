@@ -1,3 +1,4 @@
-/download/mac      https://github.com/kinkyb/gifperfect/releases/download/v1.1.6/GifPerfect-mac.dmg      302
-/download/windows  https://github.com/kinkyb/gifperfect/releases/download/v1.1.6/GifPerfect-setup.exe    302
-/download/free     https://github.com/kinkyb/gifperfect/releases/tag/v1.1.6                               302
+/download/mac        https://github.com/kinkyb/electron-apps/releases/download/gifperfect-v1.0.15/GifPerfect-1.0.15-arm64.dmg   302
+/download/mac-intel  https://github.com/kinkyb/electron-apps/releases/download/gifperfect-v1.0.15/GifPerfect-1.0.15-x64.dmg     302
+/download/windows    https://github.com/kinkyb/electron-apps/releases/download/gifperfect-v1.0.15/GifPerfect.Setup.1.0.15.exe    302
+/download/free       https://github.com/kinkyb/electron-apps/releases/tag/gifperfect-v1.0.15                                     302
