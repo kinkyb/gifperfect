@@ -414,17 +414,25 @@ h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -.
 .faq-item.open .faq-a { display: block; }
 
 /* ── Footer ───────────────────────────────────────────────────────── */
+/* Group A — mono / graphite */
 footer {
-  padding: 40px 24px;
-  border-top: 1px solid var(--border);
+  background: #0e0e0e;
+  color: rgba(255,255,255,0.6);
+  border-top: 0;
+  margin-top: 64px;
+  padding: 32px max(24px, calc((100% - 1100px) / 2));
   display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 16px;
-  font-size: 13px; color: var(--muted);
-  max-width: 900px; margin: 0 auto;
+  flex-wrap: wrap; gap: 14px 22px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  max-width: none;
 }
-.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-.footer-links a { color: var(--muted); transition: color .2s; }
-.footer-links a:hover { color: var(--text); text-decoration: none; }
+footer > span { color: rgba(255,255,255,0.78); }
+footer > span a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color .2s; }
+footer > span a:hover { color: #fff; }
+.footer-links { display: flex; gap: 12px 18px; flex-wrap: wrap; justify-content: flex-end; }
+.footer-links a { color: rgba(255,255,255,0.6); transition: color .2s; text-decoration: none; }
+.footer-links a:hover { color: #fff; }
 
 @media (max-width: 600px) {
   nav { padding: 0 20px; }
@@ -770,7 +778,7 @@ footer {
 <!-- ── Footer ── -->
 <div style="border-top: 1px solid var(--border);">
   <footer>
-    <span>© 2026 GIF Perfect · by <a href="https://adamlankamer.com" target="_blank" rel="noopener noreferrer" style="color:var(--muted);">adamlankamer.com</a></span>
+    <span>© 2026 GIF Perfect · by <a href="https://adamlankamer.com" target="_blank" rel="noopener noreferrer">adamlankamer.com</a></span>
     <div class="footer-links">
       <a href="/platforms">Platform limits</a>
       <a href="mailto:acreatorstore@translatea.com">Contact</a>
