@@ -1,5 +1,11 @@
 # GIF Perfect — Project Knowledge
 
+> ## ⚠️ DISCONTINUED 2026-05-12
+> GifPerfect has been superseded by **PerfectStudio** — a single Mac & Windows desktop app that bundles AspectPerfect, GifPerfect, FramePerfect, and SlomoPerfect under one licence. See https://perfectstudio.app (source: kinkyb/electron-apps).
+> - GitHub repo (kinkyb/gifperfect): **archived** (read-only)
+> - Netlife site (GifPerfect): **catch-all 301 → perfectstudio.app**
+> - Acaption API endpoints (/gifperfect/{licence,webhook}): **removed** — no clients shipped on legacy
+
 ## Workflow Rules
 - **Verify deploy target before deploying**: Before running any deploy command, confirm which Netlify site ID / project it will deploy to. Check `.netlify/state.json` or use `--site` flag explicitly. Deploying to the wrong site is a silent failure — the correct site gets nothing.
 - **Update CLAUDE.md after every push**: After every git push, update the project's CLAUDE.md to reflect any changes made.

@@ -1,3 +1,3 @@
-/download/mac      https://github.com/kinkyb/electron-apps/releases/download/gifperfect-v1.0.28/GifPerfect-1.0.14-arm64.dmg   302
-/download/windows  https://github.com/kinkyb/electron-apps/releases/download/gifperfect-v1.0.28/GifPerfect.Setup.1.0.14.exe    302
-/download/free     https://github.com/kinkyb/electron-apps/releases/tag/gifperfect-v1.0.28                                     302
+# GifPerfect discontinued 2026-05-12 — superseded by PerfectStudio.
+# Catch-all 301 with force (!) — overrides any static file in this site.
+/*  https://perfectstudio.app  301!
